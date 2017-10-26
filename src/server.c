@@ -12,8 +12,10 @@
 void exit_error(char *call)
 {
     fprintf(stderr, "server: %s(2 or 3) failed!\n", call);
-    perror("server");
-    exit(errno);
+    if (errno) {
+        perror("server");
+        exit(errno);
+    }
 }
 
 int main(int argc, char **argv)

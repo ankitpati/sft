@@ -12,8 +12,10 @@
 void exit_error(char *call)
 {
     fprintf(stderr, "client: %s(2 or 3) failed!\n", call);
-    perror("client");
-    exit(errno);
+    if (errno) {
+        perror("client");
+        exit(errno);
+    }
 }
 
 int main(int argc, char **argv)
