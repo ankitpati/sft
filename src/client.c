@@ -11,7 +11,7 @@
 
 void exit_error(char *call)
 {
-    fprintf(stderr, "client: %s(2) failed!\n", call);
+    fprintf(stderr, "client: %s(2 or 3) failed!\n", call);
     perror("client");
     exit(errno);
 }
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
         exit_error("recv");
 
     if (namelen > NAME_MAX)
-        exit_error("open");
+        exit_error("fopen");
 
     if (recv(sd, filename, namelen, 0) != (ssize_t) namelen)
         exit_error("recv");
@@ -61,14 +61,14 @@ int main(int argc, char **argv)
     filename[namelen] = '\0';
 
     if (!(fout = fopen(filename, "wb")))
-        exit_error("open");
+        exit_error("fopen");
 
     do {
         if ((bytes = recv(sd, buf, BUFSIZ, 0)) == -1)
             exit_error("recv");
 
         if (fwrite(buf, sizeof(*buf), bytes, fout) < (size_t) bytes)
-            exit_error("write");
+            exit_error("fwrite");
     } while (bytes > 0);
 
     fclose(fout);

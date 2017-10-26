@@ -11,7 +11,7 @@
 
 void exit_error(char *call)
 {
-    fprintf(stderr, "server: %s(2) failed!\n", call);
+    fprintf(stderr, "server: %s(2 or 3) failed!\n", call);
     perror("server");
     exit(errno);
 }
@@ -31,10 +31,9 @@ int main(int argc, char **argv)
     case 3:
         port = atoi(argv[2]);
     case 2: /* intended fall-through */
-        if ((namelen = strlen(argv[1])) > NAME_MAX) {
-            fprintf(stderr, "Filename must be smaller than %u.\n", NAME_MAX);
-            exit(2);
-        }
+        if ((namelen = strlen(argv[1])) > NAME_MAX)
+            exit_error("fopen");
+
         strcpy(filename, argv[1]);
         break;
 
@@ -69,7 +68,7 @@ int main(int argc, char **argv)
             close(sd);
 
             if (!(fin = fopen(filename, "rb")))
-                exit_error("open");
+                exit_error("fopen");
 
             if (
                 send(con_sd, &namelen, sizeof(namelen), 0) !=
@@ -82,7 +81,7 @@ int main(int argc, char **argv)
 
             while ((bytes = fread(buf, sizeof(*buf), BUFSIZ, fin))) {
                 if (ferror(fin))
-                    exit_error("read");
+                    exit_error("fread");
 
                 if (send(con_sd, buf, bytes, 0) != (ssize_t) bytes)
                     exit_error("send");
