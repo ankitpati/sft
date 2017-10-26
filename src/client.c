@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     ssize_t bytes;
     size_t namelen;
     int sd, port = DEFAULT_PORT;
-    char buf[BUFSIZ], filename[NAME_MAX + 1], *host = DEFAULT_HOST;
+    char buf[BUFSIZ], filepath[PATH_MAX + 1], *filename, *host = DEFAULT_HOST;
     struct sockaddr_in addr;
     FILE *fout;
 
@@ -52,13 +52,19 @@ int main(int argc, char **argv)
     if ((bytes = recv(sd, &namelen, sizeof(namelen), 0)) == -1)
         exit_error("recv");
 
-    if (namelen > NAME_MAX)
+    if (!namelen || namelen > PATH_MAX)
         exit_error("fopen");
 
-    if (recv(sd, filename, namelen, 0) != (ssize_t) namelen)
+    if (recv(sd, filepath, namelen, 0) != (ssize_t) namelen)
         exit_error("recv");
 
-    filename[namelen] = '\0';
+    filepath[namelen] = '\0';
+
+    for (
+        filename = filepath + namelen - 1;
+        filename != filepath && filename[-1] != '/';
+        --filename
+    );
 
     if (!(fout = fopen(filename, "wb")))
         exit_error("fopen");
