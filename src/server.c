@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 {
     size_t bytes, namelen;
     int sd, con_sd, port = DEFAULT_PORT, backlog = DEFAULT_BACKLOG;
-    char buf[BUFSIZ], filename[NAME_MAX + 1];
+    char buf[BUFSIZ], *filepath, *filename;
     socklen_t addrlen;
     struct sockaddr_in addr;
     FILE *fin;
@@ -31,10 +31,18 @@ int main(int argc, char **argv)
     case 3:
         port = atoi(argv[2]);
     case 2: /* intended fall-through */
-        if ((namelen = strlen(argv[1])) > NAME_MAX)
-            exit_error("fopen");
+        if (!(filepath = realpath(argv[1], NULL)))
+            exit_error("realpath");
 
-        strcpy(filename, argv[1]);
+        for (
+            filename = filepath + strlen(filepath) - 1;
+            *filename != '/';
+            --filename
+        );
+        ++filename;
+
+        namelen = strlen(filename);
+
         break;
 
     default:
@@ -67,7 +75,7 @@ int main(int argc, char **argv)
         if (!fork()) {
             close(sd);
 
-            if (!(fin = fopen(filename, "rb")))
+            if (!(fin = fopen(filepath, "rb")))
                 exit_error("fopen");
 
             if (
@@ -95,6 +103,7 @@ int main(int argc, char **argv)
         close(con_sd);
     }
 
+    free(filepath);
     close(sd);
     return 0;
 }
