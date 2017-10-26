@@ -11,9 +11,9 @@
 
 void exit_error(char *call)
 {
-    fprintf(stderr, "server: %s(2 or 3) failed!\n", call);
+    fprintf(stderr, "sft-server: %s(2 or 3) failed!\n", call);
     if (errno) {
-        perror("server");
+        perror("sft-server");
         exit(errno);
     }
 }
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
         break;
 
     default:
-        fprintf(stderr, "Usage:\n\tserver <filename> [port] [backlog]\n");
+        fprintf(stderr, "Usage:\n\tsft-server <filename> [port] [backlog]\n");
         exit(1);
         break;
     }

@@ -11,9 +11,9 @@
 
 void exit_error(char *call)
 {
-    fprintf(stderr, "client: %s(2 or 3) failed!\n", call);
+    fprintf(stderr, "sft-client: %s(2 or 3) failed!\n", call);
     if (errno) {
-        perror("client");
+        perror("sft-client");
         exit(errno);
     }
 }
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
         break;
 
     default:
-        fprintf(stderr, "Usage:\n\tclient [host] [port]\n");
+        fprintf(stderr, "Usage:\n\tsft-client [host] [port]\n");
         exit(1);
         break;
     }
